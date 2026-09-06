@@ -51,7 +51,7 @@ class Widic(App):
 
         widic_source_renderer = self.query_one(WidicSourceRenderer)
         markdown = self.renderhtml(soup, language=self.args.language)
-        print(markdown, file=open("test.md", "w"))
+        # print(markdown, file=open("test.md", "w"))
         widic_source_renderer.update(markdown)
         
         # widic_source_container = self.query_one(WidicSourceContainer)
