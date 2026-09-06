@@ -36,7 +36,7 @@ class Widic(App):
     
     def on_mount(self) -> None:
         self.screen.terminal_title = "Widic"
-        content = open(f"{self.args.language}_wiki_hello_orig.html", "r").read()
+        # content = open(f"{self.args.language}_wiki_hello_orig.html", "r").read()
         # content = get("https://en.wiktionary.org/w/rest.php/v1/page/hello/html",headers={"User-Agent": "Widic"}).text
         # content = get("https://de.wiktionary.org/w/rest.php/v1/page/Schriftsteller/html",headers={"User-Agent": "Widic"}).text
         content = get(f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/page/{self.args.word}/html",headers={"User-Agent": "Widic"}).text
