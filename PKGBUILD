@@ -1,7 +1,7 @@
 # Maintainer: Máté Zoltán Farkas <mail@example.com>
 
 pkgname=widic
-pkgver=fbed6f4
+pkgver=2382dcb
 pkgrel=1
 pkgdesc="A Wiktionary viewer in your terminal."
 arch=('any')
@@ -33,11 +33,10 @@ package() {
     install -Dm644 renderer.py \
         "$pkgdir/usr/share/widic/renderer.py"
 
-    install -Dm644 renderers/en.py \
-        "$pkgdir/usr/share/widic/renderers/en.py"
-
-    install -Dm644 renderers/de.py \
-        "$pkgdir/usr/share/widic/renderers/de.py"
+    for file in renderers/*.py; do
+        install -Dm644 "$file" \
+            "$pkgdir/usr/share/widic/$file"
+    done
 
     install -Dm644 LICENSE \
         "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
