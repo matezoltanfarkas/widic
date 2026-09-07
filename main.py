@@ -38,9 +38,7 @@ class WidicPageChooserSelectionList(SelectionList):
         self.styles.height = "80%"
         self.styles.align = ("center", "middle")
 
-    def on_selection_list_selected_changed(
-        self, event: SelectionList.SelectedChanged
-    ) -> None:
+    def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged) -> None:
         selected_index = self.selected[0]
         selected_title = self.parent.search_results[selected_index]
         response = get(
@@ -48,9 +46,7 @@ class WidicPageChooserSelectionList(SelectionList):
             headers={"User-Agent": "Widic"},
         )
         if response.status_code == 200:
-            self.app.render_and_load_md(
-                response, language=self.app.args.language, text_query=selected_title
-            )
+            self.app.render_and_load_md(response, language=self.app.args.language, text_query=selected_title)
 
 
 class WidicPageChooser(Screen):
@@ -66,10 +62,7 @@ class WidicPageChooser(Screen):
         self.styles.align = ("center", "middle")
 
     def compose(self) -> ComposeResult:
-        selection_list = [
-            Selection(title, i)
-            for i, title in zip(range(len(self.search_results)), self.search_results)
-        ]
+        selection_list = [Selection(title, i) for i, title in zip(range(len(self.search_results)), self.search_results)]
         yield WidicPageChooserSelectionList(*selection_list)
 
 
@@ -90,31 +83,21 @@ class Widic(App):
             headers={"User-Agent": "Widic"},
         )
         if response.status_code == 200:
-            self.render_and_load_md(
-                response, language=self.args.language, text_query=self.args.word
-            )
+            self.render_and_load_md(response, language=self.args.language, text_query=self.args.word)
         elif response.status_code == 404:
             search_query = get(
                 f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/search/title?q={self.args.word}",
                 headers={"User-Agent": "Widic"},
             )
             response_json = search_query.json()
-            assert (
-                "pages" in response_json
-            ), f"No search results found. Response: {response_json}"
-            assert (
-                "title" in response_json["pages"][0]
-            ), f"No search results found. Response: {response_json}"
+            assert "pages" in response_json, f"No search results found. Response: {response_json}"
+            assert "title" in response_json["pages"][0], f"No search results found. Response: {response_json}"
             arr = list(title["title"] for title in response_json["pages"])
             assert len(arr) > 0, f"No search results found. Response: {response_json}"
-            self.widic_page_chooser_screen = WidicPageChooser(
-                search_results=arr, text_query=self.args.word
-            )
+            self.widic_page_chooser_screen = WidicPageChooser(search_results=arr, text_query=self.args.word)
             self.push_screen(self.widic_page_chooser_screen)
         else:
-            raise Exception(
-                f"Error fetching page: {response.status_code} - {response.text}"
-            )
+            raise Exception(f"Error fetching page: {response.status_code} - {response.text}")
 
     def compose(self) -> ComposeResult:
         yield WidicHeader()
