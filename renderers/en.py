@@ -39,17 +39,26 @@ class Renderer:
                 else:
                     markdown += self.walk_tree(element, notextformat=notextformat)
             case "b":
-                markdown += "**" + self.walk_tree(element)
+                content = self.walk_tree(element)
+                if content.strip() == "":
+                    return markdown
+                markdown += "**" + content
                 if markdown.endswith(" "):
                     markdown = markdown[:-1]
                 markdown += "**"
             case "strong":
-                markdown += "**" + self.walk_tree(element)
+                content = self.walk_tree(element)
+                if content.strip() == "":
+                    return markdown
+                markdown += "**" + content
                 if markdown.endswith(" "):
                     markdown = markdown[:-1]
                 markdown += "**"
             case "i":
-                markdown += "*" + self.walk_tree(element)
+                content = self.walk_tree(element)
+                if content.strip() == "":
+                    return markdown
+                markdown += "*" + content
                 if markdown.endswith(" "):
                     markdown = markdown[:-1]
                 markdown += "*"
@@ -78,7 +87,10 @@ class Renderer:
                 else:
                     markdown += self.walk_tree(element, notextformat=notextformat)
             case "dl":
-                markdown += " `" + self.walk_tree(element, notextformat=True) + "`\n"
+                content = self.walk_tree(element, notextformat=True)
+                if content.strip() == "":
+                    return markdown
+                markdown += " `" + content + "`\n"
         return markdown
 
     def walk_tree(
