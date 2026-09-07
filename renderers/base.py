@@ -19,19 +19,20 @@ class BaseRenderer:
         }
 
     def handle_h1(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        pass
-
-    def handle_h2(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = "\n----------------"
         markdown += "\n# " + element.get_text() + "\n"
         return markdown
 
-    def handle_h3(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+    def handle_h2(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = "\n## " + element.get_text() + "\n"
         return markdown
 
-    def handle_h4(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+    def handle_h3(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = "\n### " + element.get_text() + "\n"
+        return markdown
+
+    def handle_h4(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+        markdown = "\n#### " + element.get_text() + "\n"
         return markdown
 
     def handle_p(self, element: bs4.element.Tag, *args, **kwargs) -> str:

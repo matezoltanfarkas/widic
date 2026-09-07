@@ -107,9 +107,7 @@ class Widic(App):
         if event.key == "q":
             self.exit()
 
-    def render_and_load_md(
-        self, response: requests.Response, language="en", text_query=""
-    ) -> None:
+    def render_and_load_md(self, response: requests.Response, language="en", text_query="") -> None:
         widic_header = self.query_one(WidicHeader)
         widic_header.screen.title = text_query
 
