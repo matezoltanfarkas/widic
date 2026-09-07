@@ -14,7 +14,7 @@ class Renderer:
             parts = "" + self.walk_tree(li, depth + 1, *args, **kwargs)
             if parts == "":
                 continue
-            markdown += f"\n{indent}{prefix}{parts}\n"
+            markdown += f"\n{indent}{prefix}{parts}"
         return markdown
 
     def render_text(self, element: bs4.element.Tag, notextformat: bool = False) -> str:
@@ -69,7 +69,7 @@ class Renderer:
                 else:
                     markdown += self.walk_tree(element, notextformat=notextformat)
             case "dl":
-                markdown += "\n`" + self.walk_tree(element, notextformat=True) + "`\n"
+                markdown += " `" + self.walk_tree(element, notextformat=True) + "`\n"
         return markdown
 
     def walk_tree(

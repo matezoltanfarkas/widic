@@ -10,7 +10,7 @@ class Renderer:
         dd_items = list_tag.find_all("dd", recursive=False)
 
         for index, li in enumerate(li_items, start=1):
-            indent = "    " * depth
+            indent = "  " * depth
             prefix = f"{index}. " if list_tag.name == "ol" else "- "
             parts = "" + self.walk_tree(li, depth + 1, *args, **kwargs)
             if parts == "":
@@ -18,7 +18,7 @@ class Renderer:
             markdown += f"\n{indent}{prefix}{parts}\n"
         depth += 1
         for index, li in enumerate(dd_items, start=1):
-            indent = "    " * depth
+            indent = "  " * depth
             prefix = f"{index}. " if list_tag.name == "ol" else "- "
             parts = "" + self.walk_tree(li, depth + 1, *args, **kwargs)
             if parts == "":
