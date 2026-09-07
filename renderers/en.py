@@ -39,11 +39,20 @@ class Renderer:
                 else:
                     markdown += self.walk_tree(element, notextformat=notextformat)
             case "b":
-                markdown += "**" + self.walk_tree(element) + "**"
+                markdown += "**" + self.walk_tree(element)
+                if markdown.endswith(" "):
+                    markdown = markdown[:-1]
+                markdown += "**"
             case "strong":
-                markdown += "**" + self.walk_tree(element) + "**"
+                markdown += "**" + self.walk_tree(element)
+                if markdown.endswith(" "):
+                    markdown = markdown[:-1]
+                markdown += "**"
             case "i":
-                markdown += "*" + self.walk_tree(element) + "*"
+                markdown += "*" + self.walk_tree(element)
+                if markdown.endswith(" "):
+                    markdown = markdown[:-1]
+                markdown += "*"
             case "span":
                 if "class" in element.attrs.keys() and "nyms" in element["class"]:
                     pass
