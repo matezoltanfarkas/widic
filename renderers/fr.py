@@ -7,7 +7,6 @@ class Renderer:
     ) -> str:
         markdown = ""
         li_items = list_tag.find_all("li", recursive=False)
-        dd_items = list_tag.find_all("dd", recursive=False)
 
         for index, li in enumerate(li_items, start=1):
             indent = "    " * depth
@@ -15,15 +14,7 @@ class Renderer:
             parts = "" + self.walk_tree(li, depth + 1, *args, **kwargs)
             if parts == "":
                 continue
-            markdown += f"\n{indent}{prefix}{parts}\n"
-        depth += 1
-        for index, li in enumerate(dd_items, start=1):
-            indent = "    " * depth
-            prefix = f"{index}. " if list_tag.name == "ol" else "- "
-            parts = "" + self.walk_tree(li, depth + 1, *args, **kwargs)
-            if parts == "":
-                continue
-            markdown += f"\n{indent}{prefix}{parts}\n"
+            markdown += f"{indent}{prefix}{parts}\n"
         return markdown
 
     def render_text(self, element: bs4.element.Tag, notextformat: bool = False) -> str:
@@ -34,15 +25,14 @@ class Renderer:
             # case "h1":
             # markdown += "# " + element.get_text() + "\n"
             case "h2":
+                markdown += "\n----------------"
                 markdown += "\n# " + element.get_text() + "\n"
             case "h3":
-                markdown += "\n----------------"
                 markdown += "\n## " + element.get_text() + "\n"
             case "h4":
                 markdown += "\n### " + element.get_text() + "\n"
             case "p":
-                # markdown += "\n" + self.walk_tree(element)+"\n"
-                markdown += "\n### " + element.get_text() + "\n"
+                markdown += "\n" + self.walk_tree(element) + "\n"
             case "a":
                 if "role" in element.attrs.keys() and element["role"] == "button":
                     pass
@@ -78,8 +68,8 @@ class Renderer:
                     pass
                 else:
                     markdown += self.walk_tree(element, notextformat=notextformat)
-            # case "dl":
-            # markdown += "\n`" + self.walk_tree(element, notextformat=True)+"`\n"
+            case "dl":
+                markdown += "  " + self.walk_tree(element) + "\n"
         return markdown
 
     def walk_tree(
@@ -94,7 +84,7 @@ class Renderer:
             if isinstance(child, bs4.element.NavigableString):
                 markdown += child.get_text()
             if isinstance(child, bs4.element.Tag):
-                if child.name in ("ul", "ol", "dl"):
+                if child.name in ("ul", "ol"):
                     markdown += self.render_list(
                         child, depth, notextformat=notextformat
                     )
@@ -111,6 +101,7 @@ class Renderer:
                     "i",
                     "span",
                     "div",
+                    "dl",
                 ):
                     markdown += self.render_text(child, notextformat=notextformat)
                     continue
