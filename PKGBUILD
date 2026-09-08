@@ -15,7 +15,7 @@ depends=(
   'python-textual'
 )
 
-source=("git+https://github.com/matezoltanfarkas/widic.git#branch=main")
+source=("git+https://github.com/matezoltanfarkas/widic.git#branch=dev")
 b2sums=('SKIP')
 
 # pkgver() {
