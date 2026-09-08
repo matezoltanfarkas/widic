@@ -71,33 +71,47 @@ class Widic(App):
         super().__init__()
         self.args = args
         self.widic_page_chooser_screen = None
+        # content = open(f"{self.args.language}_wiki_hello_orig.html", "r").read()
+        # content = get("https://en.wiktionary.org/w/rest.php/v1/page/hello/html",headers={"User-Agent": "Widic"}).text
+        # content = get("https://de.wiktionary.org/w/rest.php/v1/page/Schriftsteller/html",headers={"User-Agent": "Widic"}).text
+        try:
+            wiktionary_site = f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/page/{self.args.word}/html"
+            self.response = get(
+                wiktionary_site,
+                headers={"User-Agent": "Widic"},
+            )
+        except Exception:
+            self.app.exit(
+                message=f"Can't fetch URL: {wiktionary_site}\n",
+                return_code=-1,
+            )
+            return
+        if self.response.status_code == 404:
+            self.response_search = get(
+                f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/search/title?q={self.args.word}",
+                headers={"User-Agent": "Widic"},
+            )
+            if len(self.response_search.json()["pages"]) == 0:
+                self.app.exit(
+                    return_code=-1,
+                    message=f"No search results found for '{self.args.word}' in language '{self.args.language}'.",
+                )
+                return
+        elif self.response.status_code != 200:
+            self.app.exit(
+                message=f"Wiktionary server returned an error at {wiktionary_site}\nError code: {self.response.status_code}",
+                return_code=-1,
+            )
 
     def on_mount(self) -> None:
         self.screen.terminal_title = "Widic"
 
-        # content = open(f"{self.args.language}_wiki_hello_orig.html", "r").read()
-        # content = get("https://en.wiktionary.org/w/rest.php/v1/page/hello/html",headers={"User-Agent": "Widic"}).text
-        # content = get("https://de.wiktionary.org/w/rest.php/v1/page/Schriftsteller/html",headers={"User-Agent": "Widic"}).text
-        response = get(
-            f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/page/{self.args.word}/html",
-            headers={"User-Agent": "Widic"},
-        )
-        if response.status_code == 200:
-            self.render_and_load_md(response, language=self.args.language, text_query=self.args.word)
-        elif response.status_code == 404:
-            search_query = get(
-                f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/search/title?q={self.args.word}",
-                headers={"User-Agent": "Widic"},
-            )
-            response_json = search_query.json()
-            assert "pages" in response_json, f"No search results found. Response: {response_json}"
-            assert "title" in response_json["pages"][0], f"No search results found. Response: {response_json}"
-            arr = list(title["title"] for title in response_json["pages"])
-            assert len(arr) > 0, f"No search results found. Response: {response_json}"
-            self.widic_page_chooser_screen = WidicPageChooser(search_results=arr, text_query=self.args.word)
+        if self.response.status_code == 200:
+            self.render_and_load_md(self.response, language=self.args.language, text_query=self.args.word)
+        elif self.response.status_code == 404:
+            titles = list(title["title"] for title in self.response_search.json()["pages"])
+            self.widic_page_chooser_screen = WidicPageChooser(search_results=titles, text_query=self.args.word)
             self.push_screen(self.widic_page_chooser_screen)
-        else:
-            raise Exception(f"Error fetching page: {response.status_code} - {response.text}")
 
     def compose(self) -> ComposeResult:
         yield WidicHeader()
