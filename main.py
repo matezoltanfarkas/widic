@@ -109,8 +109,17 @@ class Widic(App):
         if self.response.status_code == 200:
             self.render_and_load_md(self.response, language=self.args.language, text_query=self.args.word)
         elif self.response.status_code == 404:
-            titles = list(title["title"] for title in self.response_search.json()["pages"])
-            self.widic_page_chooser_screen = WidicPageChooser(search_results=titles, text_query=self.args.word)
+            pages = self.response_search.json()["pages"]
+            sorted_page_index_pair = sorted(
+                zip(
+                    list(page["title"].lower() for page in pages),
+                    list(range(len(pages))),
+                )
+            )
+            sorted_page_titles = list(pages[pairs[1]]["title"] for pairs in sorted_page_index_pair)
+            self.widic_page_chooser_screen = WidicPageChooser(
+                search_results=sorted_page_titles, text_query=self.args.word
+            )
             self.push_screen(self.widic_page_chooser_screen)
 
     def compose(self) -> ComposeResult:
