@@ -7,22 +7,6 @@ class Renderer(BaseRenderer):
     def __init__(self):
         super().__init__()
 
-    def handle_h2(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        markdown = ""
-        markdown += "\n# " + element.get_text() + "\n"
-        return markdown
-
-    def handle_h3(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        markdown = ""
-        markdown += "\n----------------"
-        markdown += "\n## " + element.get_text() + "\n"
-        return markdown
-
-    def handle_h4(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        markdown = ""
-        markdown += "\n### " + element.get_text() + "\n"
-        return markdown
-
     def handle_p(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         return self.handle_h4(element, *args, **kwargs)
 
@@ -30,6 +14,8 @@ class Renderer(BaseRenderer):
         return ""
 
     def handle_list(self, list_tag: bs4.element.Tag, depth: int = 0, *args, **kwargs) -> str:
+        # The German Wiktionary uses <dd> for the Bedeutungen (meaning) section.
+        # These are turned into lists for stylistic reasons.
         markdown = ""
         li_items = list_tag.find_all("li", recursive=False)
         dd_items = list_tag.find_all("dd", recursive=False)

@@ -4,7 +4,7 @@ import bs4
 class BaseRenderer:
     def __init__(self):
         self.text_handlers = {
-            "h1": self.handle_h1,
+            # "h1": self.handle_h1,
             "h2": self.handle_h2,
             "h3": self.handle_h3,
             "h4": self.handle_h4,
@@ -18,11 +18,13 @@ class BaseRenderer:
             "dl": self.handle_dl,
         }
 
-    def handle_h1(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        markdown = "\n----------------"
-        markdown += "\n# " + element.get_text() + "\n"
-        return markdown
-
+    # def handle_h1(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+    #     # Fun fact: <h1> seems to be reserved for the title of the article.
+    #     # So maybe we should omit this one alltogether and care only for <h2+>
+    #     markdown = "\n----------------"
+    #     markdown += "\n# " + element.get_text() + "\n"
+    #     return markdown
+    #
     def handle_h2(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = "\n## " + element.get_text() + "\n"
         return markdown
@@ -118,11 +120,17 @@ class BaseRenderer:
         return markdown
 
     def handle_text(self, element: bs4.element.Tag, notextformat: bool = False) -> str:
+        # English Wiktionary examples are in <dl> tags, which are turned into inline code.
+        # notextformat stops bold and italic formatting which would be displayed verbatim in the examples.
+        # ...unless we are in a <span> or <a> tag, which is then turned into plain text, as always
         if notextformat and element.name not in ["span", "a"]:
             return element.get_text()
         if element.name in self.text_handlers.keys():
             return self.text_handlers[element.name](element, notextformat=notextformat)
         else:
+            # This should not happen, as handle_text is only called for tags that are in text_handlers.
+            # But better be safe than sorry.
+            # Who knows what the future holds.
             raise NotImplementedError(f"Handler for {element.name} not implemented.")
 
     def walk_tree(self, htmltree: bs4.element.Tag, depth: int = 0, notextformat: bool = False) -> str:
