@@ -26,7 +26,7 @@ class BaseRenderer:
     #     return markdown
     #
     def handle_h2(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        markdown = "\n----------------"
+        markdown = "\n\n----------------"
         markdown += "\n# " + element.get_text() + "\n"
         return markdown
 
