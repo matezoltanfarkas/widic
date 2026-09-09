@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 
+import sys
 import bs4
 import requests
 from requests import get
