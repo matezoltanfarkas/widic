@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 
 import sys
+import re
 import bs4
 import requests
 from requests import get
@@ -143,14 +144,18 @@ class Widic(App):
         # filter classes
         for i in htmlsoup.find_all(
             class_=[
-                "mw-editsection",
-                "reference",
-                "reflist",
-                "noprint",
-                "metadata",
-                "was-wotd",
-                "interproject-box",
-                "nyms-toggle",
+                re.compile(x + "[^a-zA-Z0-9_\\-]")
+                for x in [
+                    "mw-editsection",
+                    "mw-collapsible",  # a kind of collapsible table (Spanish: Translations)
+                    "reference",
+                    "reflist",
+                    "noprint",
+                    "metadata",
+                    "was-wotd",  # was word of the day stuff
+                    "interproject-box",
+                    "nyms-toggle",
+                ]
             ]
         ):
             i.decompose()
