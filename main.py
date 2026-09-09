@@ -43,7 +43,7 @@ class WidicPageChooserSelectionList(SelectionList):
         selected_title = self.parent.search_results[selected_index]
         response = get(
             f"https://{self.app.args.language}.wiktionary.org/w/rest.php/v1/page/{selected_title}/html",
-            headers={"User-Agent": "Widic"},
+            headers={"User-Agent": self.app.useragent},
         )
         if response.status_code == 200:
             self.app.render_and_load_md(response, language=self.app.args.language, text_query=selected_title)
@@ -71,6 +71,7 @@ class Widic(App):
         super().__init__()
         self.args = args
         self.widic_page_chooser_screen = None
+        self.useragent = f"Widic/v0.1 (https://github.com/matezoltanfarkas/widic) Python-urllib/{sys.version_info[0]}.{sys.version_info[1]}"
         # content = open(f"{self.args.language}_wiki_hello_orig.html", "r").read()
         # content = get("https://en.wiktionary.org/w/rest.php/v1/page/hello/html",headers={"User-Agent": "Widic"}).text
         # content = get("https://de.wiktionary.org/w/rest.php/v1/page/Schriftsteller/html",headers={"User-Agent": "Widic"}).text
@@ -78,7 +79,7 @@ class Widic(App):
             wiktionary_site = f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/page/{self.args.word}/html"
             self.response = get(
                 wiktionary_site,
-                headers={"User-Agent": "Widic"},
+                headers={"User-Agent": self.useragent},
             )
         except Exception:
             self.app.exit(
