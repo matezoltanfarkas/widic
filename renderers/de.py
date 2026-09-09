@@ -27,7 +27,7 @@ class Renderer(BaseRenderer):
         return self.handle_h4(element, *args, **kwargs)
 
     def handle_dl(self, element: bs4.element.Tag, *args, **kwargs) -> str:
-        pass
+        return ""
 
     def handle_list(self, list_tag: bs4.element.Tag, depth: int = 0, *args, **kwargs) -> str:
         markdown = ""
