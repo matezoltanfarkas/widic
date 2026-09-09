@@ -162,6 +162,8 @@ class Widic(App):
                 from renderers.de import Renderer
             case "fr":
                 from renderers.fr import Renderer
+            case "es":
+                from renderers.es import Renderer
             case _:
                 self.log(f"Unsupported language: {language}, defaulting to English")
                 from renderers.en import Renderer
