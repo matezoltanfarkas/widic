@@ -30,9 +30,6 @@ package() {
   install -Dm644 main.py \
     "$pkgdir/usr/share/widic/main.py"
 
-  install -Dm644 renderer.py \
-    "$pkgdir/usr/share/widic/renderer.py"
-
   for file in renderers/*.py; do
     install -Dm644 "$file" \
       "$pkgdir/usr/share/widic/$file"
