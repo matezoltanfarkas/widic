@@ -1,8 +1,8 @@
 # Maintainer: Máté Zoltán Farkas <mail@example.com>
 
 pkgname=widic
-pkgver=0.1.2
-pkgrel=3
+pkgver=0.2
+pkgrel=1
 pkgdesc="A Wiktionary viewer in your terminal."
 arch=('any')
 url="https://github.com/matezoltanfarkas/widic"
@@ -42,7 +42,7 @@ package() {
 
   cat >"$pkgdir/usr/bin/widic" <<'EOF'
 #!/bin/sh
-exec python /usr/share/widic/main.py "$@"
+exec /usr/bin/python /usr/share/widic/main.py "$@"
 EOF
 
   chmod 755 "$pkgdir/usr/bin/widic"
