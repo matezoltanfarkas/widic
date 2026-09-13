@@ -8,11 +8,13 @@ class BaseRenderer:
             "h2": self.handle_h2,
             "h3": self.handle_h3,
             "h4": self.handle_h4,
+            "h5": self.handle_h5,
             "p": self.handle_p,
             "a": self.handle_a,
             "b": self.handle_b,
             "strong": self.handle_strong,
             "i": self.handle_i,
+            "br": self.handle_br,
             "span": self.handle_span,
             "div": self.handle_div,
             "dl": self.handle_dl,
@@ -36,6 +38,10 @@ class BaseRenderer:
 
     def handle_h4(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = "\n### " + element.get_text() + "\n"
+        return markdown
+
+    def handle_h5(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+        markdown = "\n#### " + element.get_text() + "\n"
         return markdown
 
     def handle_p(self, element: bs4.element.Tag, *args, **kwargs) -> str:
@@ -73,30 +79,24 @@ class BaseRenderer:
             content = content[:-1]
         if content.startswith(" "):
             content = content[1:]
+        # if only one character remains, don't italicize it, as it is probably a punctuation mark (w/English buy) or something
+        if len(content) == 1:
+            return content
         markdown += "*" + content
-        markdown += "*"
+        markdown += "* "
         return markdown
+
+    def handle_br(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+        return "\\ "
 
     def handle_span(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = ""
-        if "class" in element.attrs.keys() and "nyms" in element["class"]:
-            pass
-        elif "class" in element.attrs.keys() and "nyms-toggle" in element["class"]:
-            pass
-        else:
-            markdown += self.walk_tree(element, *args, **kwargs)
+        markdown += self.walk_tree(element, *args, **kwargs)
         return markdown
 
     def handle_div(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = ""
-        if "class" in element.attrs.keys() and "NavFrame" in element["class"]:
-            pass
-        elif "class" in element.attrs.keys() and "checktrans" in element["class"]:
-            pass
-        elif "class" in element.attrs.keys() and "disambig-see-also" in element["class"]:
-            pass
-        else:
-            markdown += self.walk_tree(element, *args, **kwargs)
+        markdown += self.walk_tree(element, *args, **kwargs)
         return markdown
 
     def handle_dl(self, element: bs4.element.Tag, *args, **kwargs) -> str:

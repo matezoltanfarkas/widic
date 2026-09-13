@@ -1,7 +1,7 @@
+import re
+import sys
 from argparse import ArgumentParser
 
-import sys
-import re
 import bs4
 import requests
 from requests import get
@@ -143,20 +143,17 @@ class Widic(App):
             i.decompose()
         # filter classes
         for i in htmlsoup.find_all(
-            class_=[
-                re.compile(x + "[^a-zA-Z0-9_\\-]")
-                for x in [
-                    "mw-editsection",
-                    "mw-collapsible",  # a kind of collapsible table (Spanish: Translations)
-                    "reference",
-                    "reflist",
-                    "noprint",
-                    "metadata",
-                    "was-wotd",  # was word of the day stuff
-                    "interproject-box",
-                    "nyms-toggle",
-                ]
-            ]
+            class_=re.compile(
+                r"^(?:disambig-see-also|interproject-box|mw-collapsible|mw-ref|mw-references|NavFrame|nyms|was-wotd)$"
+            )
+            # "disambig-see-also",      suggestions on the top of the page (w/English hello)
+            # "interproject-box",       a box with links to other projects (w/English mullet)
+            # "mw-collapsible",         a kind of collapsible table (w/Spanish hermoso: Translations)
+            # "mw-ref",                 references like [1] in superscript (w/French bonjour)
+            # "mw-references",          references on the bottom of the page (w/French bonjour)
+            # "NavFrame",               Huge frame as in (w/French bonjour: Translations)
+            # "nyms",                   synonyms (w/English hello)
+            # "was-wotd"                was word of the day stuff
         ):
             i.decompose()
         # check language and import the appropriate renderer
