@@ -58,13 +58,25 @@ class BaseRenderer:
 
     def handle_b(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = ""
-        content = self.walk_tree(element, *args, **kwargs)
-        if content.strip() == "":
+        og_content = self.walk_tree(element, *args, **kwargs)
+        raw_content = og_content
+        if raw_content.strip() == "":
             return markdown
-        markdown += "**" + content
-        if markdown.endswith(" "):
-            markdown = markdown[:-1]
-        markdown += "**"
+        # if the content starts or ends with a whitespace, the stars won't make them bold:
+        if raw_content.endswith(" "):
+            raw_content = raw_content[:-1]
+        if raw_content.startswith(" "):
+            raw_content = raw_content[1:]
+        # same reasoning as for italic: if only one character remains, don't bold it, as it is probably a punctuation mark (w/English buy) or something.
+        # didn't see this occur though...
+        if len(raw_content) == 1:
+            return raw_content
+        markdown += "**" + raw_content + "**"
+        # restore removed whitespaces...
+        if og_content.startswith(" "):
+            markdown = " " + markdown
+        if og_content.endswith(" "):
+            markdown += " "
         return markdown
 
     def handle_strong(self, element: bs4.element.Tag, *args, **kwargs) -> str:
@@ -72,18 +84,24 @@ class BaseRenderer:
 
     def handle_i(self, element: bs4.element.Tag, *args, **kwargs) -> str:
         markdown = ""
-        content = self.walk_tree(element, *args, **kwargs)
-        if content.strip() == "":
+        og_content = self.walk_tree(element, *args, **kwargs)
+        raw_content = og_content
+        if raw_content.strip() == "":
             return markdown
-        if content.endswith(" "):
-            content = content[:-1]
-        if content.startswith(" "):
-            content = content[1:]
+        # if the content starts or ends with a whitespace, the stars won't make them italic:
+        if raw_content.endswith(" "):
+            raw_content = raw_content[:-1]
+        if raw_content.startswith(" "):
+            raw_content = raw_content[1:]
         # if only one character remains, don't italicize it, as it is probably a punctuation mark (w/English buy) or something
-        if len(content) == 1:
-            return content
-        markdown += "*" + content
-        markdown += "* "
+        if len(raw_content) == 1:
+            return raw_content
+        markdown += "*" + raw_content + "*"
+        # restore removed whitespaces...
+        if og_content.startswith(" "):
+            markdown = " " + markdown
+        if og_content.endswith(" "):
+            markdown += " "
         return markdown
 
     def handle_br(self, element: bs4.element.Tag, *args, **kwargs) -> str:
