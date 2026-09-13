@@ -144,8 +144,9 @@ class Widic(App):
         # filter classes
         for i in htmlsoup.find_all(
             class_=re.compile(
-                r"^(?:disambig-see-also|interproject-box|mw-collapsible|mw-ref|mw-references|NavFrame|nyms|was-wotd)$"
+                r"^(?:disambig|disambig-see-also|interproject-box|mw-collapsible|mw-ref|mw-references|NavFrame|nyms|was-wotd)$"
             )
+            # "disambig",               disambiguation pages on the top (w/Spanish hermoso)
             # "disambig-see-also",      suggestions on the top of the page (w/English hello)
             # "interproject-box",       a box with links to other projects (w/English mullet)
             # "mw-collapsible",         a kind of collapsible table (w/Spanish hermoso: Translations)
