@@ -157,6 +157,9 @@ class Widic(App):
             # "was-wotd"                was word of the day stuff
         ):
             i.decompose()
+        # remove not visible elements (display:none)
+        for i in htmlsoup.find_all(style=re.compile(r"^display:none;$")):
+            i.decompose()
         # check language and import the appropriate renderer
         match language:
             case "en":
