@@ -18,6 +18,7 @@ class BaseRenderer:
             "span": self.handle_span,
             "div": self.handle_div,
             "dl": self.handle_dl,
+            "dd": self.handle_dd,
         }
 
     # def handle_h1(self, element: bs4.element.Tag, *args, **kwargs) -> str:
@@ -125,6 +126,15 @@ class BaseRenderer:
         markdown += " `" + content + "`\n"
         return markdown
 
+    def handle_dd(self, element: bs4.element.Tag, *args, **kwargs) -> str:
+        # Child element of dl. Main rendering happens in handle_dl, so just add some spaces to the content at the end.
+        markdown = ""
+        content = self.walk_tree(element, notextformat=True)
+        if content.strip() == "":
+            return markdown
+        markdown += content + " "
+        return markdown
+
     def handle_list(self, list_tag: bs4.element.Tag, depth: int = 0, *args, **kwargs) -> str:
         markdown = ""
         li_items = list_tag.find_all("li", recursive=False)
@@ -142,7 +152,12 @@ class BaseRenderer:
         # English Wiktionary examples are in <dl> tags, which are turned into inline code.
         # notextformat stops bold and italic formatting which would be displayed verbatim in the examples.
         # ...unless we are in a <span> or <a> tag, which is then turned into plain text, as always
-        if notextformat and element.name not in ["span", "a"]:
+        if notextformat and element.name not in [
+            "span",
+            "a",
+        ]:
+            if element.name == "dd":
+                return self.handle_dd(element, notextformat=notextformat)
             return element.get_text()
         if element.name in self.text_handlers.keys():
             return self.text_handlers[element.name](element, notextformat=notextformat)
@@ -157,6 +172,7 @@ class BaseRenderer:
         for child in htmltree.children:
             if child == "\n":
                 continue
+            # avoid double spaces:
             if child == " " and markdown.endswith(" "):
                 continue
             if isinstance(child, bs4.element.NavigableString):
