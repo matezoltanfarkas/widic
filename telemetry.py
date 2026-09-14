@@ -54,13 +54,11 @@ class WidicUsageSharingText(Markdown):
             "my name is Máté and I am the sole developer of Widic.\n\n"
             "Thank you for your trust in Widic. I hope you enjoy it and find it just as useful as I do.\n\n"
             "Now, I have no idea how many of you are out there and which languages you are using Widic for. For me personally, this is a hobby project, with which I would like to contribute to the open-source community.\n\n"
-            "At the same time, I do not want to waste too much unnecessary time on something nobody is using. Unfortunately, GitHub only shows some bare cloning stats but not the entities behind it.\n\n"
-            "In order to get a better picture of what should I focus on, I ask you for your permission to collect some hashed usage data.\n\n"
+            "At the same time, I do not want to waste too much unnecessary time on something nobody is using. Unfortunately, GitHub only shows some bare cloning stats but not the entities behind it. In order to get a better picture of what should I focus on, I ask you for your permission to collect some hashed usage data.\n\n"
             "**This includes for the time being only the languages you are using Widic for.**\n\n"
             "A hypothetical revelation of this data would be something like: most users fire up Widic for language XY but then never after. This would indicate there's something wrong with the rendering of language XY.\n\n"
             "I do not care about your queries and I have no interest in you personally. If that was the case, I would aleady be running some malicious code on your machine.\n\n"
-            "In order to keep your trust, I would like to be as transparent about this as possible.\n\n"
-            "You can find the implementation of the telemetry stuff here: `https://github.com/matezoltanfarkas/widic/blob/main/telemetry.py`\n\n"
+            "In order to keep your trust, I would like to be as transparent about this as possible. You can find the implementation of the telemetry stuff here: `https://github.com/matezoltanfarkas/widic/blob/main/telemetry.py`\n\n"
             "Obviously, the defaults are set to off. You can find your id in the config file at `~/.config/widic.yaml`.\n\n"
             "In case something changes in this regard, I will let you know in a similar annoying message like this one.\n\n"
         )
@@ -75,7 +73,6 @@ class WidicUsageSharingScreen(Screen):
         self.border_title = "A Message from Widic's Developer"
 
     def on_mount(self) -> None:
-        # self.styles.align = ("center", "middle")
         markdown_widget = self.query_one(WidicUsageSharingText)
         markdown_widget.update(markdown_widget.text)
 
