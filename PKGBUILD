@@ -13,6 +13,7 @@ depends=(
   'python-beautifulsoup4'
   'python-requests'
   'python-textual'
+  'python-ruamel-yaml'
 )
 
 source=("git+https://github.com/matezoltanfarkas/widic.git#branch=dev")

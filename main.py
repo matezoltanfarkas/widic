@@ -5,11 +5,15 @@ from argparse import ArgumentParser
 import bs4
 import requests
 from requests import get
+from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.screen import Screen
 from textual.widgets import Header, Markdown, SelectionList
 from textual.widgets.selection_list import Selection
+
+import config
+import telemetry
 
 
 class WidicSourceRenderer(Markdown):
@@ -58,7 +62,6 @@ class WidicPageChooser(Screen):
         self.text_query = text_query
 
     def on_mount(self) -> None:
-        # self.screen.title = f"Search Results for Article '{self.query}':"
         select = self.query_one(WidicPageChooserSelectionList)
         select.border_title = f"Search Results for Article '{self.text_query}':"
         self.styles.align = ("center", "middle")
@@ -74,9 +77,6 @@ class Widic(App):
         self.args = args
         self.widic_page_chooser_screen = None
         self.useragent = f"Widic/v0.1 (https://github.com/matezoltanfarkas/widic) Python-urllib/{sys.version_info[0]}.{sys.version_info[1]}"
-        # content = open(f"{self.args.language}_wiki_hello_orig.html", "r").read()
-        # content = get("https://en.wiktionary.org/w/rest.php/v1/page/hello/html",headers={"User-Agent": "Widic"}).text
-        # content = get("https://de.wiktionary.org/w/rest.php/v1/page/Schriftsteller/html",headers={"User-Agent": "Widic"}).text
         try:
             wiktionary_site = f"https://{self.args.language}.wiktionary.org/w/rest.php/v1/page/{self.args.word}/html"
             self.response = get(
@@ -109,12 +109,25 @@ class Widic(App):
     def on_mount(self) -> None:
         self.screen.terminal_title = "Widic"
 
+        configHandler = config.ConfigHandler()
+        user_id = configHandler[config.Keys.USER_ID]
         if self.response.status_code == 200:
             self.render_and_load_md(self.response, language=self.args.language, text_query=self.args.word)
         elif self.response.status_code == 404:
             titles = list(title["title"] for title in self.response_search.json()["pages"])
             self.widic_page_chooser_screen = WidicPageChooser(search_results=titles, text_query=self.args.word)
             self.push_screen(self.widic_page_chooser_screen)
+
+        if user_id == 0:
+
+            def check_response(response: bool) -> None:
+                if response:
+                    configHandler.set(config.Keys.USER_ID, telemetry.generate_user_id())
+                else:
+                    configHandler.set(config.Keys.USER_ID, -1)
+
+            self.push_screen(telemetry.WidicUsageSharingScreen(), callback=check_response)
+        self.post_telemetry_data(user_id=configHandler[config.Keys.USER_ID], language=self.args.language)
 
     def compose(self) -> ComposeResult:
         yield WidicHeader()
@@ -123,6 +136,10 @@ class Widic(App):
     def on_key(self, event) -> None:
         if event.key == "q":
             self.exit()
+
+    @work(thread=True, exclusive=True)
+    async def post_telemetry_data(self, user_id: str, language: str):
+        telemetry.post_telemetry_data(user_id, language)
 
     def render_and_load_md(self, response: requests.Response, language="en", text_query="") -> None:
         widic_header = self.query_one(WidicHeader)
@@ -179,14 +196,18 @@ class Widic(App):
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="Widic - A terminal-based Wiktionary reader.")
+    configHandler = config.ConfigHandler()
+    default_language = configHandler[config.Keys.DEFAULT_LANGUAGE]
+    parser = ArgumentParser(
+        description="Widic - A Wiktionary viewer in your terminal. Definitions, Etymology, Pronunciation and more."
+    )
     # language parameter with -l key
     parser.add_argument(
         "--language",
         "-l",
         type=str,
-        default="en",
-        help="Language of the Wiktionary page (default: en)",
+        default=f"{default_language}",
+        help=f"Language of the Wiktionary page (default: {default_language})",
     )
     # word parameter is the last parameter, and is required
     parser.add_argument("word", type=str, help="Word to look up in Wiktionary")
