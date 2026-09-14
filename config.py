@@ -16,6 +16,8 @@ yaml = YAML(typ="rt")
 
 
 class ConfigHandler:
+    if not os.path.exists(os.path.expanduser("~/.config")):
+        os.makedirs(os.path.expanduser("~/.config"))
     config_file = os.path.expanduser("~/.config/widic.yaml")
 
     def __init__(self):
