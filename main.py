@@ -127,7 +127,9 @@ class Widic(App):
                     configHandler.set(config.Keys.USER_ID, -1)
 
             self.push_screen(telemetry.WidicUsageSharingScreen(), callback=check_response)
-        self.post_telemetry_data(user_id=configHandler[config.Keys.USER_ID], language=self.args.language)
+        else:
+            if user_id != -1:
+                self.post_telemetry_data(user_id=configHandler[config.Keys.USER_ID], language=self.args.language)
 
     def compose(self) -> ComposeResult:
         yield WidicHeader()

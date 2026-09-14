@@ -36,11 +36,6 @@ class AcceptTelemetryButton(Button):
         self.id = "agree"
         self.styles.margin = (1, 2, 1, 2)
 
-    # def on_button_pressed(self) -> None:
-    #     configHandler = config.ConfigHandler()
-    #     user_id = generate_user_id()
-    #     configHandler.set(config.Keys.USER_ID, user_id)
-
 
 class DeclineTelemetryButton(Button):
     def __init__(self, *args, **kwargs) -> None:
@@ -49,10 +44,6 @@ class DeclineTelemetryButton(Button):
         self.variant = "error"
         self.id = "disagree"
         self.styles.margin = (1, 2, 1, 2)
-
-    # def on_button_pressed(self) -> None:
-    #     configHandler = config.ConfigHandler()
-    #     configHandler.set(config.Keys.USER_ID, -1)
 
 
 class WidicUsageSharingText(Markdown):
@@ -63,8 +54,8 @@ class WidicUsageSharingText(Markdown):
             "my name is Máté and I am the sole developer of Widic.\n\n"
             "Thank you for your trust in Widic. I hope you enjoy it and find it just as useful as I do.\n\n"
             "Now, I have no idea how many of you are out there and which languages you are using Widic for. For me personally, this is a hobby project, with which I would like to contribute to the open-source community.\n\n"
-            "At the same time, I do not want to waste too much unnecessary time on something nobody is using. Unfortunately, GitHub only shows some bare cloning stats but not entities behind it.\n\n"
-            "In order to get a better picture of what should I focus on, I would like to collect some anonymous usage data.\n\n"
+            "At the same time, I do not want to waste too much unnecessary time on something nobody is using. Unfortunately, GitHub only shows some bare cloning stats but not the entities behind it.\n\n"
+            "In order to get a better picture of what should I focus on, I ask you for your permission to collect some hashed usage data.\n\n"
             "**This includes for the time being only the languages you are using Widic for.**\n\n"
             "A hypothetical revelation of this data would be something like: most users fire up Widic for language XY but then never after. This would indicate there's something wrong with the rendering of language XY.\n\n"
             "I do not care about your queries and I have no interest in you personally. If that was the case, I would aleady be running some malicious code on your machine.\n\n"
@@ -94,6 +85,7 @@ class WidicUsageSharingScreen(Screen):
         vertical_scroll_container = VerticalScroll(WidicUsageSharingText())
         horizontal_container = Horizontal(agree_button, disagree_button)
         horizontal_container.styles.align = ("center", "top")
+        horizontal_container.styles.height = "30%"
         yield vertical_scroll_container
         yield horizontal_container
 
